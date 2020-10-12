@@ -1,0 +1,58 @@
+FROM mysql:latest 
+
+RUN apt-get update && apt-get install cron -y && apt-get install logrotate -y 
+
+RUN echo "Europe/Paris" > /etc/timezone 
+
+
+
+
+# Dockerfile
+
+FROM mysql:latest
+
+RUN apt-get update && apt-get install cron -y && apt-get install logrotate bzip2 vim -y
+
+RUN echo "Europe/Paris" > /etc/timezone ou # ENV TZ Europe/Paris
+
+# il copie colle le fichier docker-entrypoint.sh , le rend executable et le run
+
+# docker-compose
+
+version:'3.7'
+
+services:
+        mysql-cron:
+                   build:
+                        context: context
+                        dockerfile:dockerfile
+                        environment:
+                                    MYSQL_ROOT_PASSWORD: root
+                        volumes:
+                                    - ./mysql:/var/lib/mysql
+                                    - ./backups:/backups
+
+
+# Commande CRON : 
+
+0 17 * * mon mysqldump -uroot -ppassword  --all-databases | gzip -9 -c > backups/dump.sql.gz
+
+/backups/dumps.sql.bz2 {
+    missingok
+    nocompress
+    postrotate
+            mysqldump -uroot -ppassword --all databases | bzip2
+
+}
+
+/backups/all_databases.sql {
+    rotate 5
+    daily
+    compresscmd /usr/bin/bzip2
+    compresscmd .bzip2
+    compress 
+    missingok
+    prerotate
+        mysqldump -u root --password=${MYSQL_ROOT_PASSWORD} --all-databases > /backups/all_databases.sql
+    endscript
+}

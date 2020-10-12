@@ -1,0 +1,8 @@
+version: '3.8'
+
+service:
+        custom-mysql:
+        build: .
+        environment: 
+            MYSQL_ROOT_PASSWORD: password
+        
